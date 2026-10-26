@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kyrilliset aakkoset</title>
+<style>
+:root{--bg:#e9eff4;--panel:#fbfcfd;--ink:#14243b;--mut:#5b6b80;--line:#c6d2de;--acc:#1f4e8c;--red:#c8372d;--ok:#2f7d4f;--okbg:#dff0e5;--badbg:#f6dcd9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1824;--panel:#172335;--ink:#e8eef6;--mut:#93a4ba;--line:#2a3a52;--acc:#7fb0ee;--red:#f08a80;--ok:#7ccf9c;--okbg:#17372a;--badbg:#42221f}}
+:root[data-theme="dark"]{--bg:#0f1824;--panel:#172335;--ink:#e8eef6;--mut:#93a4ba;--line:#2a3a52;--acc:#7fb0ee;--red:#f08a80;--ok:#7ccf9c;--okbg:#17372a;--badbg:#42221f}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:16px}
+h1{font:600 22px/1.2 Georgia,"Times New Roman",serif;margin:8px 0 14px}
+nav{display:flex;gap:4px;border-bottom:2px solid var(--line);margin-bottom:14px}
+nav button{flex:1;background:none;border:0;padding:10px 4px;font:inherit;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}
+nav button[aria-selected=true]{color:var(--ink);border-color:var(--red);font-weight:600}
+button:focus-visible,select:focus-visible,.card:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px;color:var(--mut);font-size:14px}
+select{font:inherit;padding:6px 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.prog{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--ok);transition:width .3s}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;cursor:pointer;user-select:none}
+.big{font:400 96px/1.1 Georgia,"Times New Roman",serif;letter-spacing:.04em}
+.snd{font:600 64px/1.1 Georgia,serif;color:var(--acc)}
+.tag{font-size:13px;color:var(--red);margin-top:10px;min-height:20px}
+.hint{color:var(--mut);margin:10px 0 0;max-width:34ch}
+.ex{margin-top:12px;font-size:20px}
+.ex b{font-family:Georgia,serif;font-weight:400;font-size:26px}
+.sp{background:none;border:1px solid var(--line);border-radius:20px;color:var(--ink);padding:2px 10px;margin-left:6px;cursor:pointer;font-size:15px}
+.row{display:flex;gap:10px;margin-top:14px}
+.row button,.go{flex:1;padding:14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.row .yes{background:var(--ok);border-color:var(--ok);color:#fff}
+.row .no{color:var(--red);border-color:var(--red)}
+.go{background:var(--acc);border-color:var(--acc);color:var(--bg);width:100%;margin-top:14px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.opts button{padding:16px 8px;font:inherit;font-size:20px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+.opts button.l{font:28px Georgia,serif}
+.opts button.ok{background:var(--okbg);border-color:var(--ok)}
+.opts button.bad{background:var(--badbg);border-color:var(--red)}
+.q{min-height:200px}.q .big{font-size:84px}
+.fb{margin-top:12px;min-height:24px;color:var(--mut);text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.t{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;border-bottom-width:4px}
+.t.s0{border-bottom-color:var(--line)}.t.s1{border-bottom-color:#d9a441}.t.s2,.t.s3{border-bottom-color:var(--ok)}
+.t span{display:block;font:26px/1.2 Georgia,serif}.t small{color:var(--mut)}
+.t.trick small{color:var(--red)}
+.foot{margin-top:22px;text-align:center}
+.foot button{background:none;border:0;color:var(--mut);text-decoration:underline;cursor:pointer;font:inherit;font-size:14px}
+.key{color:var(--mut);font-size:13px;margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Kyrilliset aakkoset</h1>
+<nav role="tablist"></nav>
+<div id="app"></div>
+<div class="foot"><button id="reset">Nollaa edistyminen</button></div>
+</div>
+<script>
+// [iso, pieni, ääntäminen, vihje, esimerkkisana, suomennos, ryhmä]
+const L=[
+["А","а","a","Kuin suomen a.","аптека","apteekki","easy"],
+["Б","б","b","Kuin suomen b.","банк","pankki","new"],
+["В","в","v","Näyttää B:ltä, mutta on v.","вода","vesi","trick"],
+["Г","г","g","Kuin suomen g.","город","kaupunki","new"],
+["Д","д","d","Kuin suomen d.","дом","talo","new"],
+["Е","е","je","Äännetään je (ye). Pehmentää edeltävää konsonanttia.","еда","ruoka","easy"],
+["Ё","ё","jo","Е:n kaksoset pisteillä. Aina painollinen.","ёлка","kuusi","new"],
+["Ж","ж","ž","Kuin ranskan j, ”zh”. Muistisääntö: kuin kuoriainen.","жена","vaimo","new"],
+["З","з","z","Näyttää kolmoselta. Kuin soinnillinen s.","зима","talvi","new"],
+["И","и","i","Näyttää peilatulta N:ltä, mutta on i.","игра","peli","new"],
+["Й","й","j","Lyhyt j, esim. sanan lopussa: ai, oi.","музей","museo","new"],
+["К","к","k","Kuin suomen k.","кофе","kahvi","easy"],
+["Л","л","l","Kuin suomen l.","лампа","lamppu","new"],
+["М","м","m","Kuin suomen m.","мама","äiti","easy"],
+["Н","н","n","Näyttää H:lta, mutta on n.","нос","nenä","trick"],
+["О","о","o","Kuin suomen o (painottomana lähes a).","окно","ikkuna","easy"],
+["П","п","p","Näyttää ovelta. Kuin suomen p.","парк","puisto","new"],
+["Р","р","r","Näyttää P:ltä, mutta on r (rullaava).","радио","radio","trick"],
+["С","с","s","Näyttää C:ltä, mutta on s.","суп","keitto","trick"],
+["Т","т","t","Kuin suomen t.","такси","taksi","easy"],
+["У","у","u","Näyttää Y:ltä, mutta on u.","улица","katu","trick"],
+["Ф","ф","f","Kuin suomen f.","фото","valokuva","new"],
+["Х","х","h","Näyttää X:ltä, mutta on karhea h (kh).","хлеб","leipä","trick"],
+["Ц","ц","ts","Kuin suomen ts, esim. ”katsoa”.","цирк","sirkus","new"],
+["Ч","ч","tš","Kuin suomen tš, esim. ”tšekki”.","чай","tee","new"],
+["Ш","ш","š","Kuin suomen š, esim. ”šakki”.","школа","koulu","new"],
+["Щ","щ","šš","Pehmeä, pitkä š (lähes šč).","борщ","borssi","new"],
+["Ъ","ъ","kovamerkki","Ei ääntä. Erottaa tavut toisistaan.","объект","kohde","new"],
+["Ы","ы","y-i","Suomessa ei vastinetta: i, mutta kieli taempana.","сын","poika","new"],
+["Ь","ь","pehmeämerkki","Ei ääntä. Pehmentää edeltävää konsonanttia.","день","päivä","new"],
+["Э","э","e","Peilattu 3. Kuin suomen e.","эхо","kaiku","easy"],
+["Ю","ю","ju","Kuin suomen ju.","юг","etelä","new"],
+["Я","я","ja","Peilattu R. Kuin suomen ja.","яблоко","omena","new"]
+];
+const GN={easy:"Tutut: näyttävät ja kuulostavat samalta",trick:"Huijarit: näyttävät latinalaisilta, mutta ääntyvät toisin",new:"Uudet merkit"};
+const KEY="kyr-v1";
+let sc={},mode="cards",filt="all",flipped=false,cur=null,last=-1,dir="l2s",ans=false,streak=0;
+try{sc=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){sc={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(sc))}catch(e){}}
+const $=s=>document.querySelector(s),app=$("#app");
+const pool=()=>L.map((x,i)=>i).filter(i=>filt==="all"||L[i][6]===filt);
+const S=i=>sc[L[i][0]]||0;
+function pick(){const p=pool();let w=[],t=0;p.forEach(i=>{const k=i===last&&p.length>1?0:4-Math.min(S(i),3);w.push(k);t+=k});let r=Math.random()*t;for(let j=0;j<p.length;j++){r-=w[j];if(r<=0){last=p[j];return p[j]}}last=p[0];return p[0]}
+function say(t){try{const u=new SpeechSynthesisUtterance(t);u.lang="ru-RU";u.rate=.8;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function setS(i,d){const k=L[i][0];sc[k]=Math.max(0,Math.min(3,(sc[k]||0)+d));save()}
+function head(){const p=pool(),k=p.filter(i=>S(i)>=2).length;
+return `<div class="bar"><select id="f" aria-label="Rajaa merkit"><option value="all">Kaikki (${L.length})</option>${Object.keys(GN).map(g=>`<option value="${g}" ${filt===g?"selected":""}>${GN[g].split(":")[0]} (${L.filter(x=>x[6]===g).length})</option>`).join("")}</select><span>Opittu ${k} / ${p.length}</span></div><div class="prog"><i style="width:${p.length?k/p.length*100:0}%"></i></div>`}
+function bindHead(){const f=$("#f");f.value=filt;f.onchange=()=>{filt=f.value;cur=null;render()}}
+function tabs(){const n=$("nav");n.innerHTML=[["cards","Kortit"],["quiz","Testi"],["table","Taulukko"]].map(([m,t])=>`<button role="tab" data-m="${m}" aria-selected="${mode===m}">${t}</button>`).join("");n.querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;cur=null;flipped=false;ans=false;render()})}
+function render(){tabs();({cards,quiz,table})[mode]()}
+function cards(){
+if(cur===null)cur=pick();const x=L[cur];
+app.innerHTML=head()+`<div class="card" tabindex="0" id="c" role="button" aria-label="Käännä kortti">`+(flipped?
+`<div class="snd">${x[2]}</div><p class="hint">${x[3]}</p><div class="ex"><b>${x[4]}</b> = ${x[5]}<button class="sp" id="sp" aria-label="Kuuntele sana">Kuuntele</button></div>`:
+`<div class="big">${x[0]}${x[1]}</div><div class="tag">${x[6]==="trick"?"Huijari: tarkista ääntäminen":""}</div><p class="hint">Mikä ääntää tämän?<br>Napauta korttia kääntääksesi.</p>`)+`</div>`+
+(flipped?`<div class="row"><button class="no" id="no">Harjoittele vielä</button><button class="yes" id="yes">Osasin</button></div>`:`<button class="go" id="fl">Käännä</button>`)+
+`<div class="key">Näppäimet: väli = käännä, ← vielä, → osasin</div>`;
+bindHead();
+const flip=()=>{flipped=true;render()};
+$("#c").onclick=e=>{if(e.target.id==="sp"){say(x[4]);return}if(!flipped)flip()};
+if(!flipped)$("#fl").onclick=flip;
+else{$("#sp").onclick=e=>{e.stopPropagation();say(x[4])};$("#no").onclick=()=>next(-3);$("#yes").onclick=()=>next(1)}}
+function next(d){setS(cur,d);cur=pick();flipped=false;render()}
+function quiz(){
+if(cur===null){cur=pick();ans=false}const x=L[cur];
+const others=L.map((_,i)=>i).filter(i=>i!==cur&&L[i][2]!==x[2]);
+others.sort(()=>Math.random()-.5);const ids=[cur,...others.slice(0,3)].sort(()=>Math.random()-.5);
+if(!quiz.ids||quiz.cur!==cur||quiz.dir!==dir){quiz.ids=ids;quiz.cur=cur;quiz.dir=dir}
+const o=quiz.ids,l2s=dir==="l2s";
+app.innerHTML=head()+`<div class="bar"><span>Suunta:</span><select id="d"><option value="l2s">Kirjain → ääni</option><option value="s2l">Ääni → kirjain</option></select><span>Putki: ${streak}</span></div>`+
+`<div class="card q" style="cursor:default">${l2s?`<div class="big">${x[0]}${x[1]}</div>`:`<div class="snd">${x[2]}</div>`}<p class="hint">${l2s?"Mikä ääni tämä on?":"Mikä kirjain tämä on?"}</p></div>`+
+`<div class="opts">${o.map(i=>`<button data-i="${i}" class="${l2s?"":"l"}">${l2s?L[i][2]:L[i][0]+L[i][1]}</button>`).join("")}</div><div class="fb" id="fb" aria-live="polite"></div><button class="go" id="nx" style="display:none">Seuraava</button>`;
+bindHead();$("#d").value=dir;$("#d").onchange=e=>{dir=e.target.value;cur=null;render()};
+app.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{if(ans)return;ans=true;const i=+b.dataset.i,ok=i===cur;
+if(ok){b.classList.add("ok");setS(cur,1);streak++;$("#fb").textContent=`Oikein. ${x[0]}${x[1]} = ${x[2]}`}
+else{b.classList.add("bad");setS(cur,-3);streak=0;app.querySelectorAll(".opts button").forEach(c=>{if(+c.dataset.i===cur)c.classList.add("ok")});$("#fb").textContent=`Oikea vastaus: ${x[0]}${x[1]} = ${x[2]}. ${x[3]}`}
+$("#nx").style.display="block";$("#nx").focus();$("#nx").onclick=()=>{cur=pick();ans=false;render()}})}
+function table(){
+const body=Object.keys(GN).map(g=>`<h2 style="font:600 15px/1.3 system-ui;margin:18px 0 8px;color:${g==="trick"?"var(--red)":"var(--mut)"}">${GN[g]}</h2><div class="grid">${L.map((x,i)=>x[6]===g?`<div class="t s${S(i)} ${g}"><span>${x[0]}${x[1]}</span><small>${x[2]}</small></div>`:"").join("")}</div>`).join("");
+app.innerHTML=`<p class="hint" style="max-width:none;margin:0">Alareunan väri kertoo tilanteen: harmaa = uusi, keltainen = harjoittelussa, vihreä = osaat.</p>`+body}
+document.addEventListener("keydown",e=>{if(mode!=="cards"||/SELECT|BUTTON/.test(e.target.tagName)&&e.key===" ")return;
+if(e.key===" "&&!flipped){e.preventDefault();flipped=true;render()}
+else if(flipped&&e.key==="ArrowLeft")next(-3);else if(flipped&&e.key==="ArrowRight")next(1)});
+$("#reset").onclick=()=>{if(confirm("Nollataanko kaikki edistyminen?")){sc={};save();streak=0;cur=null;flipped=false;render()}};
+render();
+</script>
+</body>
+</html>
