@@ -47,6 +47,7 @@ select{font:inherit;padding:6px 8px;border-radius:6px;border:1px solid var(--lin
 .t.s0{border-bottom-color:var(--line)}.t.s1{border-bottom-color:#d9a441}.t.s2,.t.s3{border-bottom-color:var(--ok)}
 .t span{display:block;font:26px/1.2 Georgia,serif}.t small{color:var(--mut)}
 .t.trick small{color:var(--red)}
+.pg{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pc{display:flex;flex-direction:column;gap:8px}.pc button{padding:12px 6px;font:inherit;font-size:20px;border-radius:10px;border:2px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;min-height:58px}.pc button.l{font:30px Georgia,serif}.pc button.sel{border-color:var(--acc)}.pc button.ok{background:var(--okbg);border-color:var(--ok);opacity:.55}.pc button.bad{background:var(--badbg);border-color:var(--red)}
 .foot{margin-top:22px;text-align:center}
 .foot button{background:none;border:0;color:var(--mut);text-decoration:underline;cursor:pointer;font:inherit;font-size:14px}
 .key{color:var(--mut);font-size:13px;margin-top:10px;text-align:center}
@@ -110,8 +111,8 @@ function setS(i,d){const k=L[i][0];sc[k]=Math.max(0,Math.min(3,(sc[k]||0)+d));sa
 function head(){const p=pool(),k=p.filter(i=>S(i)>=2).length;
 return `<div class="bar"><select id="f" aria-label="Rajaa merkit"><option value="all">Kaikki (${L.length})</option>${Object.keys(GN).map(g=>`<option value="${g}" ${filt===g?"selected":""}>${GN[g].split(":")[0]} (${L.filter(x=>x[6]===g).length})</option>`).join("")}</select><span>Opittu ${k} / ${p.length}</span></div><div class="prog"><i style="width:${p.length?k/p.length*100:0}%"></i></div>`}
 function bindHead(){const f=$("#f");f.value=filt;f.onchange=()=>{filt=f.value;cur=null;render()}}
-function tabs(){const n=$("nav");n.innerHTML=[["cards","Kortit"],["quiz","Testi"],["table","Taulukko"]].map(([m,t])=>`<button role="tab" data-m="${m}" aria-selected="${mode===m}">${t}</button>`).join("");n.querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;cur=null;flipped=false;ans=false;render()})}
-function render(){tabs();({cards,quiz,table})[mode]()}
+function tabs(){const n=$("nav");n.innerHTML=[["cards","Kortit"],["quiz","Testi"],["pairs","Pari"],["words","Sanat"],["table","Taulukko"]].map(([m,t])=>`<button role="tab" data-m="${m}" aria-selected="${mode===m}">${t}</button>`).join("");n.querySelectorAll("button").forEach(b=>b.onclick=()=>{mode=b.dataset.m;cur=null;flipped=false;ans=false;render()})}
+function render(){tabs();({cards,quiz,pairs,words,table})[mode]()}
 function cards(){
 if(cur===null)cur=pick();const x=L[cur];
 app.innerHTML=head()+`<div class="card" tabindex="0" id="c" role="button" aria-label="Käännä kortti">`+(flipped?
@@ -142,6 +143,33 @@ $("#nx").style.display="block";$("#nx").focus();$("#nx").onclick=()=>{cur=pick()
 function table(){
 const body=Object.keys(GN).map(g=>`<h2 style="font:600 15px/1.3 system-ui;margin:18px 0 8px;color:${g==="trick"?"var(--red)":"var(--mut)"}">${GN[g]}</h2><div class="grid">${L.map((x,i)=>x[6]===g?`<div class="t s${S(i)} ${g}"><span>${x[0]}${x[1]}</span><small>${x[2]}</small></div>`:"").join("")}</div>`).join("");
 app.innerHTML=`<p class="hint" style="max-width:none;margin:0">Alareunan väri kertoo tilanteen: harmaa = uusi, keltainen = harjoittelussa, vihreä = osaat.</p>`+body}
+let P=null,W=null,Wl=-1,wans=false,wst=0;
+const shuf=a=>a.slice().sort(()=>Math.random()-.5);
+function newP(){const p=pool().sort((a,b)=>S(a)-S(b)+Math.random()*2-1),it=shuf(p.slice(0,Math.min(6,p.length)));P={f:filt,it,l:shuf(it),r:shuf(it),sel:null,done:[],miss:0,bad:null}}
+function pairs(){
+if(!P||P.f!==filt)newP();
+const fin=P.done.length===P.it.length;
+const btn=(i,side)=>{const x=L[i],ok=P.done.includes(i),sel=P.sel&&P.sel.side===side&&P.sel.i===i,bad=P.bad&&P.bad[side]===i;
+return `<button data-i="${i}" data-s="${side}" class="${side==="l"?"l":""} ${ok?"ok":""} ${sel?"sel":""} ${bad?"bad":""}" ${ok?"disabled":""}>${side==="l"?x[0]+x[1]:x[2]}</button>`};
+app.innerHTML=head()+`<p class="hint" style="max-width:none;margin:0 0 12px">Napauta kyrillistä kirjainta ja sitten sen ääntä.</p><div class="pg"><div class="pc">${P.l.map(i=>btn(i,"l")).join("")}</div><div class="pc">${P.r.map(i=>btn(i,"r")).join("")}</div></div>`+(fin?`<div class="fb" style="color:var(--ok)">Kierros valmis! Virheitä: ${P.miss}</div><button class="go" id="np">Uusi kierros</button>`:`<div class="fb">Löydetty ${P.done.length} / ${P.it.length}</div>`);
+bindHead();
+app.querySelectorAll(".pc button").forEach(b=>b.onclick=()=>{const i=+b.dataset.i,s=b.dataset.s;
+if(P.bad)return;
+if(P.sel&&P.sel.side!==s){const a=s==="l"?i:P.sel.i,c=s==="r"?i:P.sel.i;
+if(a===c){P.done.push(a);setS(a,1);P.sel=null;render()}
+else{P.miss++;setS(a,-1);setS(c,-1);P.bad={l:a,r:c};P.sel=null;render();setTimeout(()=>{if(P)P.bad=null;if(mode==="pairs")render()},600)}}
+else{P.sel={side:s,i};render()}});
+if(fin)$("#np").onclick=()=>{newP();render()}}
+function mkW(){let i;do{i=Math.floor(Math.random()*L.length)}while(i===Wl);Wl=i;const o=shuf([i,...shuf(L.map((_,j)=>j).filter(j=>j!==i)).slice(0,3)]);W={i,o};wans=false}
+function words(){
+if(!W)mkW();const x=L[W.i],o=W.o;
+app.innerHTML=`<div class="bar"><span>Lue sana ja valitse suomennos</span><span>Putki: ${wst}</span></div><div class="card q" style="cursor:default"><div class="big" style="font-size:64px">${x[4]}</div><p class="hint">Mitä tämä tarkoittaa? Lue sana kirjain kerrallaan.</p></div><div class="opts">${o.map(j=>`<button data-j="${j}">${L[j][5]}</button>`).join("")}</div><div class="fb" id="fb" aria-live="polite"></div><button class="go" id="nx" style="display:none">Seuraava</button>`;
+const bs=app.querySelectorAll(".opts button");
+bs.forEach(b=>b.onclick=()=>{if(wans)return;wans=true;const ok=+b.dataset.j===W.i;
+b.classList.add(ok?"ok":"bad");wst=ok?wst+1:0;
+if(!ok)bs.forEach(c=>{if(+c.dataset.j===W.i)c.classList.add("ok")});
+$("#fb").textContent=(ok?"Oikein. ":"Oikea vastaus: ")+x[4]+" = "+x[5];say(x[4]);
+$("#nx").style.display="block";$("#nx").focus();$("#nx").onclick=()=>{mkW();render()}})}
 document.addEventListener("keydown",e=>{if(mode!=="cards"||/SELECT|BUTTON/.test(e.target.tagName)&&e.key===" ")return;
 if(e.key===" "&&!flipped){e.preventDefault();flipped=true;render()}
 else if(flipped&&e.key==="ArrowLeft")next(-3);else if(flipped&&e.key==="ArrowRight")next(1)});
